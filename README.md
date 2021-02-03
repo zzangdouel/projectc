@@ -1,2 +1,0 @@
-# projectc
-과제

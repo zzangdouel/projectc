@@ -130,12 +130,17 @@ public class BoardDao {
 			Query query = new Query(Criteria.where(DBCollections._ID).is(_id));
 			retMap = mongoTemplate.findOne(query, HashMap.class, DBCollections.BOARD_INFO);
 			if (retMap != null) {
-				String updateData = DateUtil.curDate(1);
-				Update upd = new Update();
-				upd.set(DBCollections.DELETE_YES, TypeCode.YES);
-				upd.set(DBCollections.UPDATE_DATE, updateData);
-				mongoTemplate.updateFirst(query, upd, DBCollections.BOARD_INFO);
-				resJsonData.put(TypeCode.RESULT_CODE, ReturnCode.REQ_SUCCESS);
+				String deleteYes = retMap.get(DBCollections.DELETE_YES) != null	? retMap.get(DBCollections.DELETE_YES).toString(): TypeCode.NO_DATA;	
+				if(deleteYes.equals(TypeCode.NO)) {
+					String updateData = DateUtil.curDate(1);
+					Update upd = new Update();
+					upd.set(DBCollections.DELETE_YES, TypeCode.YES);
+					upd.set(DBCollections.UPDATE_DATE, updateData);
+					mongoTemplate.updateFirst(query, upd, DBCollections.BOARD_INFO);
+					resJsonData.put(TypeCode.RESULT_CODE, ReturnCode.REQ_SUCCESS);	
+				}else {
+					resJsonData.put(TypeCode.RESULT_CODE, ReturnCode.REQ_FAIL);	
+				}				
 			}else {
 				resJsonData.put(TypeCode.RESULT_CODE, ReturnCode.REQ_FAIL);
 			}
